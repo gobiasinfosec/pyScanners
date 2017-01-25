@@ -6,16 +6,25 @@ The ultimate goal of this tool is to build in support for many other tools so th
 
 ###Usage
 Run from the command line using the following syntax:
+
 python3 omnislash.py -t 192.168.1.0/24 -p 21,22,137 -o output -a
 
 Options:
+
 -h --help	        -print help file
+
 -t --target	      -target network
+
 -p --port         -ports to scan (need to be comma seperated)
+
 -o --output	      -output file location (do not give it a file type)
+
 -e --enum4linux	  -run the enum4linux plugin
+
 -s --showmount	  -run the showmount plugin
+
 -n --nikto   	    -run the nikto plugin
+
 -a --all 	        -run all tool plugins automatically
 
 
