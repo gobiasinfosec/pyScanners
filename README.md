@@ -46,6 +46,8 @@ The tools currently supported for automation by Omnislash are as follows:
 
 -Configure plugins to take arguments for port results to scan against (allow for more useability)
 
+-Clean up output so there aren't as many files created (compile results into one report, put raw results in a folder?)
+
 ###Disclaimer
 
 I did not write any of the tools used by Omnislash and do not take credit for doing so. Omnislash is just meant to make using these tools easier with a single kick-off point for automation.
