@@ -14,12 +14,13 @@
 #   -ftp-anon.nse (https://svn.nmap.org/nmap/scripts/ftp-anon.nse)
 #   -realvnc-auth-bypass.nse (https://svn.nmap.org/nmap/scripts/realvnc-auth-bypass.nse)
 #   -vnc-info.nse(https://svn.nmap.org/nmap/scripts/vnc-info.nse)
+#   -smtp-open-relay.nse(https://svn.nmap.org/nmap/scripts/smtp-open-relay.nse)
 #
 # Revision  1.0     -   01/25/2017- Initial creation of script
 #           1.0.1   -   01/26/2017- Added support for ftp-anon.nse, additional ports for nikto,
 #                                   reduced wait time for masscan, 'all' flag to automatically
-#                                   scan for all supported ports, added support for vnc-info.nse
-#                                   and realvnc-auth-bypass.nse
+#                                   scan for all supported ports, vnc-info.nse, realvnc-auth-bypass.nse,
+#                                   smtp-open-relay.nse
 #
 # To do:
 #   -   add support for more tools
@@ -37,13 +38,16 @@ import getopt, os, sys, datetime
 ports = ''
 target = ''
 output = ''
+time = (str(datetime.datetime.now()).split(' ')[0])
+
+#plugin globals
 all_plugins = False
 showmount_plugin = False
 enum4linux_plugin = False
 nikto_plugin = False
 ftpanon_plugin = False
 vnc_plugin = False
-time = (str(datetime.datetime.now()).split(' ')[0])
+smtpRelay_plugin = False
 
 #global ports
 ftpanon_ports = [21]
@@ -51,7 +55,8 @@ nikto_ports = [80,443]
 enum4linux_ports = [137,139,445]
 showmount_ports = [2049]
 vnc_ports = [5900]
-all_ports = [ftpanon_ports,nikto_ports,enum4linux_ports,showmount_ports,vnc_ports]
+smtpRelay_ports = [25, 465, 587]
+all_ports = [ftpanon_ports,nikto_ports,enum4linux_ports,showmount_ports,vnc_ports, smtpRelay_ports]
 
 def usage():
     print('Omnislash- python3')
@@ -66,6 +71,7 @@ def usage():
     print('-s --showmount	-run the showmount plugin')
     print('-n --nikto   	-run the nikto plugin')
     print('-f --ftpanon   	-run the ftp-anon.nse plugin')
+    print('-m --mail       	-run the smtp-open-relay.nse plugin')
     print('-v --vnc        	-run the vnc.nse scripts plugin')
     print('-a --all 	    -run all tool plugins automatically')
     print('-h --help	    -print this help file')
@@ -77,8 +83,9 @@ def usage():
     print('***-NFS-Common (http://packages.ubuntu.com/precise/net/nfs-common)')
     print('***-Nikto (https://github.com/sullo/nikto)')
     print('***-ftp-anon.nse (https://svn.nmap.org/nmap/scripts/ftp-anon.nse)')
-    print('***-realvnc-auth-bypass.nse (https://svn.nmap.org/nmap/scripts/realvnc-auth-bypass.nse')
-    print('***-vnc-info.nse(https://svn.nmap.org/nmap/scripts/vnc-info.nse')
+    print('***-realvnc-auth-bypass.nse (https://svn.nmap.org/nmap/scripts/realvnc-auth-bypass.nse)')
+    print('***-vnc-info.nse(https://svn.nmap.org/nmap/scripts/vnc-info.nse)')
+    print('***-smtp-open-relay.nse(https://svn.nmap.org/nmap/scripts/smtp-open-relay.nse)')
     sys.exit()
 
 def masscan(ports, target, output):
@@ -140,6 +147,30 @@ def ftpanon(ports, target, output):
                 os.system(arguments)
 
             print('ftp-anon.nse results for port %s can be found in %s_%s_ftp-anon' % (iPort,output,iPort))
+
+        except Exception:
+            print('%s_%s not found.' % (output,iPort))
+
+def smtpRelay(ports, target, output):
+    global smtpRelay_ports
+
+    for iPort in smtpRelay_ports:
+        try:
+            oList = []
+            f = open(('%s_%s' % (output,iPort)), 'r')
+
+            # import each line from the list into a variable
+            for line in f:
+               oList.append(line.rstrip())
+            f.close()
+
+            # run smtp-open-relay.nse against each argument
+            for address in oList:
+                print('Running smtp-open-relay.nse against %s:%s' % (address,iPort))
+                arguments = ('nmap -p %s --script smtp-open-relay %s >> %s 2>&1' % (iPort, address, ('%s_%s_smtpRelay' % (output,iPort))))
+                os.system(arguments)
+
+            print('smtp-open-relay.nse results for port %s can be found in %s_%s_smtpRelay' % (iPort,output,iPort))
 
         except Exception:
             print('%s_%s not found.' % (output,iPort))
@@ -242,7 +273,7 @@ def showmount(ports, target, output):
 
 def main():
     global ports, target, output, time, all_plugins, enum4linux_plugin, showmount_plugin
-    global vnc_plugin, nikto_plugin, ftpanon_plugin, all_ports
+    global vnc_plugin, nikto_plugin, ftpanon_plugin, all_ports, smtpRelay_plugin
 
     #if no arguments given, run usage
     if not len(sys.argv[1:]):
@@ -250,7 +281,7 @@ def main():
 
     #read the commandline options
     try:
-        opts,args = getopt.getopt(sys.argv[1:],'o:p:t:haefnvs',['output','vnc','target','nikto','port','ftpanon','enum4linux','showmount','all','help'])
+        opts,args = getopt.getopt(sys.argv[1:],'o:p:t:haefmnvs',['output','mail','vnc','target','nikto','port','ftpanon','enum4linux','showmount','all','help'])
     except getopt.GetoptError as err:
         print(str(err))
         usage()
@@ -271,6 +302,8 @@ def main():
             ftpanon_plugin = True
         elif o in ('-v','--vnc'):
             vnc_plugin = True
+        elif o in ('-m','--mail'):
+            smtpRelay_plugin = True
         elif o in ('-s','--showmount'):
             showmount_plugin = True
         elif o in ('-n','--nikto'):
@@ -301,6 +334,7 @@ def main():
         enum4linux(ports, target, output)
         showmount(ports, target, output)
         vncCheck(ports, target, output)
+        smtpRelay(ports, target, output)
     else:
         if ftpanon_plugin == True:
             ftpanon(ports, target, output)
@@ -312,6 +346,8 @@ def main():
             showmount(ports, target, output)
         if vnc_plugin == True:
             vncCheck(ports, target, output)
+        if smtpRelay_plugin == True:
+            smtpRelay(ports, target, output)
 
     print('Masscan results can be found in %s (with appended port results)' % (output))
 
