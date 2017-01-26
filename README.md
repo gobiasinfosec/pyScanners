@@ -37,6 +37,8 @@ The tools currently supported for automation by Omnislash are as follows:
 
 -Work on a timeout/faster processing for HTTPS ports in Nikto
 
+-Create separate help file
+
 -Combine all ports when running enum4linux and only run against 1 set of IPs (reduces duplicate results)
 
 ###Known Issues
