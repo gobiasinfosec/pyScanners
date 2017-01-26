@@ -10,23 +10,7 @@ Run from the command line using the following syntax:
 
 python3 omnislash.py -t 192.168.1.0/24 -p 21,22,137 -o output -a
 
-Options:
-
--h --help	        -print help file
-
--t --target	      -target network
-
--p --port         -ports to scan (need to be comma seperated)
-
--o --output	      -output file location (do not give it a file type)
-
--e --enum4linux	  -run the enum4linux plugin
-
--s --showmount	  -run the showmount plugin
-
--n --nikto   	    -run the nikto plugin
-
--a --all 	        -run all tool plugins automatically
+Full details for options can be found within the script
 
 
 ###Supported tools
@@ -39,16 +23,25 @@ The tools currently supported for automation by Omnislash are as follows:
 
 -showmount (http://packages.ubuntu.com/precise/net/nfs-common)
 
+-ftp-anon.nse (https://svn.nmap.org/nmap/scripts/ftp-anon.nse)
 
 ###To do
 
 -Continue adding support for more tools/ports
 
--Configure plugins to take arguments for port results to scan against (allow for more useability)
+-Configure plugins to take arguments for port results to scan against (allow for more useability- will require replacing getopt)
 
 -Clean up output so there aren't as many files created (compile results into one report, put raw results in a folder?)
 
 -Implement threading to run all tool plugins simultaneously for faster results (as an option as this would be extremely noisy)
+
+-Work on a timeout/faster processing for HTTPS ports in Nikto
+
+-Combine all ports when running enum4linux and only run against 1 set of IPs (reduces duplicate results)
+
+###Known Issues
+
+-Nikto can hang while scanning HTTPS (30 minutes+ for each IP)
 
 ###Disclaimer
 
