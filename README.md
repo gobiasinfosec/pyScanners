@@ -25,6 +25,12 @@ The tools currently supported for automation by Omnislash are as follows:
 
 -ftp-anon.nse (https://svn.nmap.org/nmap/scripts/ftp-anon.nse)
 
+-realvnc-auth-bypass.nse (https://svn.nmap.org/nmap/scripts/realvnc-auth-bypass.nse)
+
+-vnc-info.nse(https://svn.nmap.org/nmap/scripts/vnc-info.nse)
+
+-smtp-open-relay.nse(https://svn.nmap.org/nmap/scripts/smtp-open-relay.nse)
+
 ###To do
 
 -Continue adding support for more tools/ports
@@ -44,6 +50,8 @@ The tools currently supported for automation by Omnislash are as follows:
 ###Known Issues
 
 -Nikto can hang while scanning HTTPS (30 minutes+ for each IP)
+
+-Only IP ranges in CIDR notation are accepted (use /32 for a single IP)
 
 ###Disclaimer
 
