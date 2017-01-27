@@ -31,6 +31,12 @@ The tools currently supported for automation by Omnislash are as follows:
 
 -smtp-open-relay.nse(https://svn.nmap.org/nmap/scripts/smtp-open-relay.nse)
 
+-mysql-enum.nse(https://svn.nmap.org/nmap/scripts/mysql-enum.nse)
+
+-mysql-empty-password.nse(https://svn.nmap.org/nmap/scripts/mysql-empty-password.nse)
+
+-ms-sql-info.nse(https://svn.nmap.org/nmap/scripts/ms-sql-info.nse)
+
 ###To do
 
 -Continue adding support for more tools/ports
