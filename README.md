@@ -53,7 +53,7 @@ The tools currently supported for automation by Omnislash are as follows:
 
 -Combine all ports when running enum4linux and only run against 1 set of IPs (reduces duplicate results)
 
-###Known Issues
+### Known Issues
 
 -Nikto can hang while scanning HTTPS (30 minutes+ for each IP)
 
