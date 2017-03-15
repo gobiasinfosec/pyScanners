@@ -1,10 +1,10 @@
-##Omnislash
+## Omnislash
 
 Omnislash is a python3 script designed to take the output from masscan (https://github.com/robertdavidgraham/masscan) and clean it up for automated use by other tools. In its current form, it will take the scan results and output each port to its own list of IPs with the time, range and port number appended to the name of the file. 
 
 The ultimate goal of this tool is to build in support for many other tools so that they can all be kicked off from a single command.
 
-###Usage
+### Usage
 
 Run from the command line using the following syntax:
 
@@ -13,7 +13,7 @@ python3 omnislash.py -t 192.168.1.0/24 -p 21,22,137 -o output -a
 Full details for options can be found within the script
 
 
-###Supported tools
+### Supported tools
 
 The tools currently supported for automation by Omnislash are as follows:
 
@@ -37,7 +37,7 @@ The tools currently supported for automation by Omnislash are as follows:
 
 -ms-sql-info.nse(https://svn.nmap.org/nmap/scripts/ms-sql-info.nse)
 
-###To do
+### To do
 
 -Continue adding support for more tools/ports
 
@@ -59,7 +59,7 @@ The tools currently supported for automation by Omnislash are as follows:
 
 -Only IP ranges in CIDR notation are accepted (use /32 for a single IP)
 
-###Disclaimer
+### Disclaimer
 
 I did not write any of the tools used by Omnislash and do not take credit for doing so. Omnislash is just meant to make using these tools easier with a single kick-off point for automation.
 
