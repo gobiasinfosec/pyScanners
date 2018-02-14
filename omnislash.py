@@ -1,5 +1,5 @@
 #! python3
-# omnislash.py - v1.0.2
+# omnislash.py - v1.0.3
 # Author- David Sullivan
 #
 # Runs masscan against its target list and automatically cleans up the
@@ -26,6 +26,7 @@
 #                                   smtp-open-relay.nse
 #           1.0.2   -   01/27/2017- Added support for mysql-enum.nse and mysql-empty-password.nse,
 #                                   ms-sql-info.nse
+#	    1.0.3   -   02/14/2018- Some debugging, got rid of empty files generated, etc. 
 #
 # To do:
 #   -   add support for more tools
@@ -130,16 +131,16 @@ def cleanup(ports, target, output):
             if oList[result][0] == portno:
                 newList.append(oList[result][1])
 
-        #remove duplicates and put in numerical order by IP
-        newList = list(set(newList))
-        newList.sort(key=lambda s: list(map(int, s.split('.'))))
+                #remove duplicates and put in numerical order by IP
+                newList = list(set(newList))
+                newList.sort(key=lambda s: list(map(int, s.split('.'))))
 
-        #save/overwrite file
-        out = open(('%s_%s' % (output, (portno.split('/')[0]))), 'w')
-        for address in newList:
-          out.write(address+'\n')
-        out.close()
-        newList = []
+                #save/overwrite file
+                out = open(('%s_%s' % (output, (portno.split('/')[0]))), 'w')
+                for address in newList:
+                    out.write(address+'\n')
+                out.close()
+                newList = []
 
 def ftpanon(ports, target, output):
     global ftpanon_ports
@@ -163,7 +164,7 @@ def ftpanon(ports, target, output):
             print('ftp-anon.nse results for port %s can be found in %s_%s_ftp-anon' % (iPort,output,iPort))
 
         except Exception:
-            print('%s_%s not found.' % (output,iPort))
+            pass
 
 def smtpRelay(ports, target, output):
     global smtpRelay_ports
@@ -187,7 +188,7 @@ def smtpRelay(ports, target, output):
             print('smtp-open-relay.nse results for port %s can be found in %s_%s_smtpRelay' % (iPort,output,iPort))
 
         except Exception:
-            print('%s_%s not found.' % (output,iPort))
+            pass
 
 def vncCheck(ports, target, output):
     global vnc_ports
@@ -211,7 +212,7 @@ def vncCheck(ports, target, output):
             print('vnc.nse results for port %s can be found in %s_%s_vnc' % (iPort,output,iPort))
 
         except Exception:
-            print('%s_%s not found.' % (output,iPort))
+            pass
 
 def mysql(ports, target, output):
     global mysql_ports
@@ -235,7 +236,7 @@ def mysql(ports, target, output):
             print('mysql.nse results for port %s can be found in %s_%s_mysql' % (iPort,output,iPort))
 
         except Exception:
-            print('%s_%s not found.' % (output,iPort))
+            pass
 
 def mssql(ports, target, output):
     global mssql_ports
@@ -259,7 +260,7 @@ def mssql(ports, target, output):
             print('ms-sql-info.nse results for port %s can be found in %s_%s_mssql' % (iPort,output,iPort))
 
         except Exception:
-            print('%s_%s not found.' % (output,iPort))
+            pass
 
 def nikto(ports, target, output):
     global nikto_ports
@@ -283,7 +284,7 @@ def nikto(ports, target, output):
             print('Nikto results for port %s can be found in %s_%s_nikto' % (iPort,output,iPort))
 
         except Exception:
-            print('%s_%s not found.' % (output,iPort))
+            pass
 
 def enum4linux(ports, target, output):
     global enum4linux_ports
@@ -307,7 +308,7 @@ def enum4linux(ports, target, output):
             print('enum4linux results for port %s can be found in %s_%s_enum4linux' % (iPort,output,iPort))
 
         except Exception:
-            print('%s_%s not found.' % (output,iPort))
+            pass
 
 def showmount(ports, target, output):
     global showmount_ports
@@ -331,7 +332,7 @@ def showmount(ports, target, output):
             print('showmount results for port %s can be found in %s_%s_showmount' % (iPort,output,iPort))
 
         except Exception:
-            print('%s_%s not found.' % (output,iPort))
+            pass
 
 def main():
     global ports, target, output, time, all_plugins, enum4linux_plugin, showmount_plugin
