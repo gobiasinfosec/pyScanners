@@ -388,6 +388,8 @@ def main():
         ports = ','.join(pList)
 
     #add timestamp and range to output
+    if '/' not in target:
+        target = target + '/32'
     output = ('%s_%s_%s' % (output, time,('%s-%s' % ((target.split('/')[0]),(target.split('/')[1])))))
 
     #call masscan with options
