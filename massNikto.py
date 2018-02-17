@@ -1,5 +1,5 @@
 #! python3
-# massNikto.py - v1.0.2
+# massNikto.py - v1.0
 # Author- David Sullivan
 #
 # Runs masscan against its target list and automatically runs the results against nikto
