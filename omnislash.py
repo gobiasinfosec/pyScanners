@@ -26,7 +26,7 @@
 #                                   smtp-open-relay.nse
 #           1.0.2   -   01/27/2017- Added support for mysql-enum.nse and mysql-empty-password.nse,
 #                                   ms-sql-info.nse
-#	    1.0.3   -   02/14/2018- Some debugging, got rid of empty files generated, etc. 
+#           1.0.3   -   02/14/2018- Some debugging, got rid of empty files generated, etc.
 #
 # To do:
 #   -   add support for more tools
@@ -40,13 +40,13 @@
 
 import getopt, os, sys, datetime
 
-#globals
+# globals
 ports = ''
 target = ''
 output = ''
 time = (str(datetime.datetime.now()).split(' ')[0])
 
-#plugin globals
+# plugin globals
 all_plugins = False
 showmount_plugin = False
 enum4linux_plugin = False
@@ -57,16 +57,17 @@ smtpRelay_plugin = False
 mysql_plugin = False
 mssql_plugin = False
 
-#global ports
+# global ports
 ftpanon_ports = [21]
-nikto_ports = [80,443]
-enum4linux_ports = [137,139,445]
+nikto_ports = [80, 443]
+enum4linux_ports = [137, 139, 445]
 showmount_ports = [2049]
 vnc_ports = [5900]
 smtpRelay_ports = [25, 465, 587]
 mysql_ports = [3306]
-mssql_ports = [445,1433]
-all_ports = [ftpanon_ports,nikto_ports,mysql_ports,enum4linux_ports,showmount_ports,vnc_ports, smtpRelay_ports]
+mssql_ports = [445, 1433]
+all_ports = [ftpanon_ports, nikto_ports, mysql_ports, enum4linux_ports, showmount_ports, vnc_ports, smtpRelay_ports]
+
 
 def usage():
     print('Omnislash- python3')
@@ -103,16 +104,18 @@ def usage():
     print('***-ms-sql-info.nse(https://svn.nmap.org/nmap/scripts/ms-sql-info.nse)')
     sys.exit()
 
+
 def masscan(ports, target, output):
     print('Running masscan against %s using ports %s' % (target, ports))
-    arguments = 'masscan -p %s %s --wait=0 > %s' % (ports,target,output)
+    arguments = 'masscan -p %s %s --wait=0 > %s' % (ports, target, output)
     os.system(arguments)
+
 
 def cleanup(ports, target, output):
     oList = []
     newList = []
 
-    #Build a working list to compare ports against
+    # Build a working list to compare ports against
     compareList = ports.split(',')
     for portno in range(len(compareList)):
         compareList[portno] = ('%s/tcp' % compareList[portno])
@@ -120,27 +123,28 @@ def cleanup(ports, target, output):
     f = open(output, 'r')
     print('Cleaning up output')
 
-    #extract the IP address and Port from each line
+    # extract the IP address and Port from each line
     for line in f:
-        oList.append([(line.split()[3]),(line.split()[-1])])
+        oList.append([(line.split()[3]), (line.split()[-1])])
     f.close()
 
-    #sort the results to different output files based on port
+    # sort the results to different output files based on port
     for portno in compareList:
         for result in range(len(oList)):
             if oList[result][0] == portno:
                 newList.append(oList[result][1])
 
-                #remove duplicates and put in numerical order by IP
+                # remove duplicates and put in numerical order by IP
                 newList = list(set(newList))
                 newList.sort(key=lambda s: list(map(int, s.split('.'))))
 
-                #save/overwrite file
+                # save/overwrite file
                 out = open(('%s_%s' % (output, (portno.split('/')[0]))), 'w')
                 for address in newList:
-                    out.write(address+'\n')
+                    out.write(address + '\n')
                 out.close()
                 newList = []
+
 
 def ftpanon(ports, target, output):
     global ftpanon_ports
@@ -148,23 +152,25 @@ def ftpanon(ports, target, output):
     for iPort in ftpanon_ports:
         try:
             oList = []
-            f = open(('%s_%s' % (output,iPort)), 'r')
+            f = open(('%s_%s' % (output, iPort)), 'r')
 
             # import each line from the list into a variable
             for line in f:
-               oList.append(line.rstrip())
+                oList.append(line.rstrip())
             f.close()
 
             # run ftp-anon.nse against each argument
             for address in oList:
-                print('Running ftp-anon.nse against %s:%s' % (address,iPort))
-                arguments = ('nmap -p %s --script ftp-anon %s >> %s 2>&1' % (iPort, address, ('%s_%s_ftp-anon' % (output,iPort))))
+                print('Running ftp-anon.nse against %s:%s' % (address, iPort))
+                arguments = ('nmap -p %s --script ftp-anon %s >> %s 2>&1' % (
+                    iPort, address, ('%s_%s_ftp-anon' % (output, iPort))))
                 os.system(arguments)
 
-            print('ftp-anon.nse results for port %s can be found in %s_%s_ftp-anon' % (iPort,output,iPort))
+            print('ftp-anon.nse results for port %s can be found in %s_%s_ftp-anon' % (iPort, output, iPort))
 
         except Exception:
             pass
+
 
 def smtpRelay(ports, target, output):
     global smtpRelay_ports
@@ -172,23 +178,25 @@ def smtpRelay(ports, target, output):
     for iPort in smtpRelay_ports:
         try:
             oList = []
-            f = open(('%s_%s' % (output,iPort)), 'r')
+            f = open(('%s_%s' % (output, iPort)), 'r')
 
             # import each line from the list into a variable
             for line in f:
-               oList.append(line.rstrip())
+                oList.append(line.rstrip())
             f.close()
 
             # run smtp-open-relay.nse against each argument
             for address in oList:
-                print('Running smtp-open-relay.nse against %s:%s' % (address,iPort))
-                arguments = ('nmap -p %s --script smtp-open-relay %s >> %s 2>&1' % (iPort, address, ('%s_%s_smtpRelay' % (output,iPort))))
+                print('Running smtp-open-relay.nse against %s:%s' % (address, iPort))
+                arguments = ('nmap -p %s --script smtp-open-relay %s >> %s 2>&1' % (
+                    iPort, address, ('%s_%s_smtpRelay' % (output, iPort))))
                 os.system(arguments)
 
-            print('smtp-open-relay.nse results for port %s can be found in %s_%s_smtpRelay' % (iPort,output,iPort))
+            print('smtp-open-relay.nse results for port %s can be found in %s_%s_smtpRelay' % (iPort, output, iPort))
 
         except Exception:
             pass
+
 
 def vncCheck(ports, target, output):
     global vnc_ports
@@ -196,23 +204,25 @@ def vncCheck(ports, target, output):
     for iPort in vnc_ports:
         try:
             oList = []
-            f = open(('%s_%s' % (output,iPort)), 'r')
+            f = open(('%s_%s' % (output, iPort)), 'r')
 
             # import each line from the list into a variable
             for line in f:
-               oList.append(line.rstrip())
+                oList.append(line.rstrip())
             f.close()
 
             # run vnc.nse scripts against each argument
             for address in oList:
-                print('Running vnc.nse scripts against %s:%s' % (address,iPort))
-                arguments = ('nmap -p %s --script vnc-info.nse --script realvnc-auth-bypass.nse %s >> %s 2>&1' % (iPort, address, ('%s_%s_vnc' % (output,iPort))))
+                print('Running vnc.nse scripts against %s:%s' % (address, iPort))
+                arguments = ('nmap -p %s --script vnc-info.nse --script realvnc-auth-bypass.nse %s >> %s 2>&1' % (
+                    iPort, address, ('%s_%s_vnc' % (output, iPort))))
                 os.system(arguments)
 
-            print('vnc.nse results for port %s can be found in %s_%s_vnc' % (iPort,output,iPort))
+            print('vnc.nse results for port %s can be found in %s_%s_vnc' % (iPort, output, iPort))
 
         except Exception:
             pass
+
 
 def mysql(ports, target, output):
     global mysql_ports
@@ -220,23 +230,25 @@ def mysql(ports, target, output):
     for iPort in mysql_ports:
         try:
             oList = []
-            f = open(('%s_%s' % (output,iPort)), 'r')
+            f = open(('%s_%s' % (output, iPort)), 'r')
 
             # import each line from the list into a variable
             for line in f:
-               oList.append(line.rstrip())
+                oList.append(line.rstrip())
             f.close()
 
             # run mysql.nse scripts against each argument
             for address in oList:
-                print('Running mysql.nse scripts against %s:%s' % (address,iPort))
-                arguments = ('nmap -p %s --script mysql-enum.nse --script mysql-empty-password.nse %s >> %s 2>&1' % (iPort, address, ('%s_%s_mysql' % (output,iPort))))
+                print('Running mysql.nse scripts against %s:%s' % (address, iPort))
+                arguments = ('nmap -p %s --script mysql-enum.nse --script mysql-empty-password.nse %s >> %s 2>&1' % (
+                    iPort, address, ('%s_%s_mysql' % (output, iPort))))
                 os.system(arguments)
 
-            print('mysql.nse results for port %s can be found in %s_%s_mysql' % (iPort,output,iPort))
+            print('mysql.nse results for port %s can be found in %s_%s_mysql' % (iPort, output, iPort))
 
         except Exception:
             pass
+
 
 def mssql(ports, target, output):
     global mssql_ports
@@ -244,23 +256,25 @@ def mssql(ports, target, output):
     for iPort in mssql_ports:
         try:
             oList = []
-            f = open(('%s_%s' % (output,iPort)), 'r')
+            f = open(('%s_%s' % (output, iPort)), 'r')
 
             # import each line from the list into a variable
             for line in f:
-               oList.append(line.rstrip())
+                oList.append(line.rstrip())
             f.close()
 
             # run ms-sql-info.nse script against each argument
             for address in oList:
-                print('Running ms-sql-info.nse script against %s:%s' % (address,iPort))
-                arguments = ('nmap -p %s --script ms-sql-info.nse %s >> %s 2>&1' % (iPort, address, ('%s_%s_mssql' % (output,iPort))))
+                print('Running ms-sql-info.nse script against %s:%s' % (address, iPort))
+                arguments = ('nmap -p %s --script ms-sql-info.nse %s >> %s 2>&1' % (
+                    iPort, address, ('%s_%s_mssql' % (output, iPort))))
                 os.system(arguments)
 
-            print('ms-sql-info.nse results for port %s can be found in %s_%s_mssql' % (iPort,output,iPort))
+            print('ms-sql-info.nse results for port %s can be found in %s_%s_mssql' % (iPort, output, iPort))
 
         except Exception:
             pass
+
 
 def nikto(ports, target, output):
     global nikto_ports
@@ -268,23 +282,24 @@ def nikto(ports, target, output):
     for iPort in nikto_ports:
         try:
             oList = []
-            f = open(('%s_%s' % (output,iPort)), 'r')
+            f = open(('%s_%s' % (output, iPort)), 'r')
 
             # import each line from the list into a variable
             for line in f:
-               oList.append(line.rstrip())
+                oList.append(line.rstrip())
             f.close()
 
             # run nikto against each argument
             for address in oList:
-                print('Running nikto against %s:%s' % (address,iPort))
-                arguments = ('nikto -h %s -p %s >> %s 2>&1' % (address, iPort, ('%s_%s_nikto' % (output,iPort))))
+                print('Running nikto against %s:%s' % (address, iPort))
+                arguments = ('nikto -h %s -p %s >> %s 2>&1' % (address, iPort, ('%s_%s_nikto' % (output, iPort))))
                 os.system(arguments)
 
-            print('Nikto results for port %s can be found in %s_%s_nikto' % (iPort,output,iPort))
+            print('Nikto results for port %s can be found in %s_%s_nikto' % (iPort, output, iPort))
 
         except Exception:
             pass
+
 
 def enum4linux(ports, target, output):
     global enum4linux_ports
@@ -292,23 +307,24 @@ def enum4linux(ports, target, output):
     for iPort in enum4linux_ports:
         try:
             oList = []
-            f = open(('%s_%s' % (output,iPort)), 'r')
+            f = open(('%s_%s' % (output, iPort)), 'r')
 
-            #import each line from the list into a variable
+            # import each line from the list into a variable
             for line in f:
                 oList.append(line.rstrip())
             f.close()
 
-            #run enum4linux against each argument
+            # run enum4linux against each argument
             for address in oList:
-                print('Running enum4linux against %s:%s' % (address,iPort))
-                arguments = ('enum4linux %s >> %s 2>&1' % (address,('%s_%s_enum4linux' % (output,iPort))))
+                print('Running enum4linux against %s:%s' % (address, iPort))
+                arguments = ('enum4linux %s >> %s 2>&1' % (address, ('%s_%s_enum4linux' % (output, iPort))))
                 os.system(arguments)
 
-            print('enum4linux results for port %s can be found in %s_%s_enum4linux' % (iPort,output,iPort))
+            print('enum4linux results for port %s can be found in %s_%s_enum4linux' % (iPort, output, iPort))
 
         except Exception:
             pass
+
 
 def showmount(ports, target, output):
     global showmount_ports
@@ -316,7 +332,7 @@ def showmount(ports, target, output):
     for iPort in showmount_ports:
         try:
             oList = []
-            f = open(('%s_%s' % (output,iPort)), 'r')
+            f = open(('%s_%s' % (output, iPort)), 'r')
 
             # import each line from the list into a variable
             for line in f:
@@ -325,62 +341,65 @@ def showmount(ports, target, output):
 
             # run showmount against each argument
             for address in oList:
-                print('Running showmount against %s:%s' % (address,iPort))
-                arguments = ('showmount -e %s >> %s 2>&1' % (address, ('%s_%s_showmount' % (output,iPort))))
+                print('Running showmount against %s:%s' % (address, iPort))
+                arguments = ('showmount -e %s >> %s 2>&1' % (address, ('%s_%s_showmount' % (output, iPort))))
                 os.system(arguments)
 
-            print('showmount results for port %s can be found in %s_%s_showmount' % (iPort,output,iPort))
+            print('showmount results for port %s can be found in %s_%s_showmount' % (iPort, output, iPort))
 
         except Exception:
             pass
 
+
 def main():
     global ports, target, output, time, all_plugins, enum4linux_plugin, showmount_plugin
-    global vnc_plugin, nikto_plugin, ftpanon_plugin, all_ports, smtpRelay_plugin, mysql_plugin
+    global vnc_plugin, nikto_plugin, ftpanon_plugin, all_ports, smtpRelay_plugin, mysql_plugin, mssql_plugin
 
-    #if no arguments given, run usage
+    # if no arguments given, run usage
     if not len(sys.argv[1:]):
         usage()
 
-    #read the commandline options
+    # read the commandline options
     try:
-        opts,args = getopt.getopt(sys.argv[1:],'o:p:t:haeqfimnvs',['mssql','mysql','output','mail','vnc','target','nikto','port','ftpanon','enum4linux','showmount','all','help'])
+        opts, args = getopt.getopt(sys.argv[1:], 'o:p:t:haeqfimnvs',
+                                   ['mssql', 'mysql', 'output', 'mail', 'vnc', 'target', 'nikto', 'port', 'ftpanon',
+                                    'enum4linux', 'showmount', 'all', 'help'])
     except getopt.GetoptError as err:
         print(str(err))
         usage()
-	
-    #handle arguments
-    for o,a in opts:
-        if o in ('-h','--help'):
+
+    # handle arguments
+    for o, a in opts:
+        if o in ('-h', '--help'):
             usage()
-        elif o in ('-t','--target'):
+        elif o in ('-t', '--target'):
             target = a
-        elif o in ('-p','--port'):
+        elif o in ('-p', '--port'):
             ports = a
-        elif o in ('-a','--all'):
+        elif o in ('-a', '--all'):
             all_plugins = True
-        elif o in ('-e','--enum4linux'):
+        elif o in ('-e', '--enum4linux'):
             enum4linux_plugin = True
-        elif o in ('-f','--ftpanon'):
+        elif o in ('-f', '--ftpanon'):
             ftpanon_plugin = True
-        elif o in ('-v','--vnc'):
+        elif o in ('-v', '--vnc'):
             vnc_plugin = True
-        elif o in ('-m','--mail'):
+        elif o in ('-m', '--mail'):
             smtpRelay_plugin = True
-        elif o in ('-s','--showmount'):
+        elif o in ('-s', '--showmount'):
             showmount_plugin = True
-        elif o in ('-n','--nikto'):
+        elif o in ('-n', '--nikto'):
             nikto_plugin = True
-        elif o in ('-q','--mysql'):
+        elif o in ('-q', '--mysql'):
             mysql_plugin = True
-        elif o in ('-i','--mssql'):
+        elif o in ('-i', '--mssql'):
             mssql_plugin = True
-        elif o in ('-o','--output'):
+        elif o in ('-o', '--output'):
             output = a
         else:
             assert False, ('Unhandled option')
 
-    #if all ports selected, create all ports list
+    # if all ports selected, create all ports list
     if ports == 'all':
         pList = []
         for i in range(len(all_ports)):
@@ -388,16 +407,16 @@ def main():
                 pList.append(str(all_ports[i][ii]))
         ports = ','.join(pList)
 
-    #add timestamp and range to output
+    # add timestamp and range to output
     if '/' not in target:
         target = target + '/32'
-    output = ('%s_%s_%s' % (output, time,('%s-%s' % ((target.split('/')[0]),(target.split('/')[1])))))
+    output = ('%s_%s_%s' % (output, time, ('%s-%s' % ((target.split('/')[0]), (target.split('/')[1])))))
 
-    #call masscan with options
+    # call masscan with options
     masscan(ports, target, output)
     cleanup(ports, target, output)
 
-    if all_plugins == True:
+    if all_plugins:
         ftpanon(ports, target, output)
         nikto(ports, target, output)
         enum4linux(ports, target, output)
@@ -407,23 +426,25 @@ def main():
         mysql(ports, target, output)
         mssql(ports, target, output)
     else:
-        if ftpanon_plugin == True:
+        if ftpanon_plugin:
             ftpanon(ports, target, output)
-        if nikto_plugin == True:
+        if nikto_plugin:
             nikto(ports, target, output)
-        if enum4linux_plugin == True:
+        if enum4linux_plugin:
             enum4linux(ports, target, output)
-        if showmount_plugin == True:
+        if showmount_plugin:
             showmount(ports, target, output)
-        if vnc_plugin == True:
+        if vnc_plugin:
             vncCheck(ports, target, output)
-        if smtpRelay_plugin == True:
+        if smtpRelay_plugin:
             smtpRelay(ports, target, output)
-        if mysql_plugin == True:
+        if mysql_plugin:
             mysql(ports, target, output)
-        if mssql_plugin == True:
+        if mssql_plugin:
             mssql(ports, target, output)
 
     print('Masscan results can be found in %s (with appended port results)' % (output))
 
+
 main()
+
